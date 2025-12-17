@@ -1,0 +1,7 @@
+## Interface: 30300
+## Title: Guild Recruiter
+## Version: 1.0
+## Author: SoonBeSteak
+## Notes: An addon to send recruitment messages to world.
+## SavedVariables: GuildRecruiterDB
+Core.lua
