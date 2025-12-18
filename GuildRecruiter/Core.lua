@@ -2,7 +2,7 @@ local f = CreateFrame("frame", "GuildRecruiterFrame", UIParent)
 
 local GuildRecruiterDB = {
 	["timer"] = 30,
-	["message"] = "_GUILD_ is recruiting new players for our raid team.",
+	["message"] = "<_GUILD_> is a newly formed, Australian based guild, looking for members in the oceanic region/time zone. We welcome all types of players from the oceanic region whether you're super casual or wanting to get into raiding. PST for more info.",
 	["status"] = "off"
 }
 
@@ -11,10 +11,10 @@ local function DecimalToHexColor(r, g, b, a)
 end
 
 local function GetMessage()
-	if not GuildRosterDB then GuildRosterDB = {} end
-	if not GuildRosterDB.message then GuildRosterDB.message = "_GUILD_ is recruiting new members for our raid team. Whisper a member for more information." end
+	if not GuildRecruiterDB then GuildRecruiterDB = {} end
+	if not GuildRecruiterDB.message then GuildRecruiterDB.message = "_GUILD_ is recruiting new members for our raid team. Whisper a member for more information." end
 
-	local msg = GuildRosterDB.message
+	local msg = GuildRecruiterDB.message
 	local guildName = GetGuildInfo("player")
 
 	msg = msg:gsub("_GUILD_", guildName)
@@ -32,26 +32,27 @@ local function SendAddOnMessage()
 	end
 end
 
-local function OnEvent(self, event, ...)
-	--[[
-	if ( event == "CHAT_MSG_WHISPER" ) then
+function f:CHAT_MSG_WHISPER(self, event, ...)
 		local msg, name, _, _, _, _, _, _, _, _, _, guid = ...
 		local cmd, target = string.split(" ", string.lower(msg), 2)
+end
 
-	end
-	]]
+function f:VARIABLES_LOADED(self, event, ...)
+	if GuildRecruiterDB.status == "on" then
+		SendAddOnMessage()
+	end	
+end
 
-	if event == "VARIABLES_LOADED" then
-		if GuildRecruiterDB.status == "on" then
-			SendAddOnMessage()
-		end
+local function OnEvent(self, event, ...)
+	if self[event] ~= nil then
+		self[event](event, ...)
 	end
 end
 
 local function OnUpdate(self, elapsed)
 	self.timer = ( self.timer or 0 ) + elapsed
 
-	if self.timer >= GuildRecruiterDB.timer then
+	if self.timer >= tonumber(GuildRecruiterDB.timer) then
 		SendAddOnMessage()
 
 		self.timer = 0
@@ -86,7 +87,7 @@ local function SlashCmd(...)
 			SendAddOnMessage()
 		end
 	elseif string.lower(cmd) == "timer" then
-		GuildRecruiterDB.timer = params
+		GuildRecruiterDB.timer = tonumber(params:match("%d+"))
 		f.timer = 0
 		print(("|cffffaa00[GuildRecruiter]:|r timer set to: %s sec"):format(GuildRecruiterDB.timer))
 	end
