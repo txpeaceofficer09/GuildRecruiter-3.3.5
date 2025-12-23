@@ -66,6 +66,7 @@ end
 
 local function OnUpdate(self, elapsed)
 	self.timer = ( self.timer or 0 ) + elapsed
+	Init()
 
 	if self.timer >= tonumber(GuildRecruiterDB.timer) then
 		SendAddOnMessage()
