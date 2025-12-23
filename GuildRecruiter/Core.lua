@@ -1,18 +1,29 @@
 local f = CreateFrame("frame", "GuildRecruiterFrame", UIParent)
 
+--[[
 local GuildRecruiterDB = {
 	["timer"] = 30,
 	["message"] = "<_GUILD_> is a newly formed, Australian based guild, looking for members in the oceanic region/time zone. We welcome all types of players from the oceanic region whether you're super casual or wanting to get into raiding. PST for more info.",
 	["status"] = "off"
 }
+]]
+
+local function Init()
+	if not GuildRecruiterDB then GuildRecruiterDB = {} end
+	if not GuildRecruiterDB.message then GuildRecruiterDB.message = "<_GUILD_> is a newly formed, Australian based guild, looking for members in the oceanic region/time zone. We welcome all types of players from the oceanic region whether you're super casual or wanting to get into raiding. PST for more info." end
+	if not GuildRecruiterDB.timer then GuildRecruiterDB.timer = 30 end
+	if not GuildRecruiterDB.status then GuildRecruiterDB.status = "off" end
+end
 
 local function DecimalToHexColor(r, g, b, a)
 	return ("|c%02x%02x%02x%02x"):format(a*255, r*255, g*255, b*255)
 end
 
 local function GetMessage()
-	if not GuildRecruiterDB then GuildRecruiterDB = {} end
-	if not GuildRecruiterDB.message then GuildRecruiterDB.message = "_GUILD_ is recruiting new members for our raid team. Whisper a member for more information." end
+	--if not GuildRecruiterDB then GuildRecruiterDB = {} end
+	--if not GuildRecruiterDB.message then GuildRecruiterDB.message = "_GUILD_ is recruiting new members for our raid team. Whisper a member for more information." end
+
+	Init()
 
 	local msg = GuildRecruiterDB.message
 	local guildName = GetGuildInfo("player")
@@ -24,6 +35,8 @@ end
 
 local function SendAddOnMessage()
 	if GetChannelName("World") == 0 then JoinChannelByName("World") end
+
+	if not IsInGuild() then return end
 
 	local msg = GetMessage()
 
@@ -38,6 +51,8 @@ function f:CHAT_MSG_WHISPER(self, event, ...)
 end
 
 function f:VARIABLES_LOADED(self, event, ...)
+	Init()
+
 	if GuildRecruiterDB.status == "on" then
 		SendAddOnMessage()
 	end	
